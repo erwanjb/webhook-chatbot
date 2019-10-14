@@ -78,14 +78,15 @@ app.get('/webhook', (req, res) => {
     }
   });
 
-  app.get('*', function(req, res) {  
-    
-    if (!req.connection.encrypted) {
-        res.redirect('https://' + req.headers.host + req.url);
+  app.use (function (req, res, next) {
+    if (req.secure) {
+            // request was via https, so do no special handling
+            next();
+    } else {
+            // request was via http, so redirect to https
+            res.redirect('https://' + req.headers.host + req.url);
     }
-    // Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
-    // res.redirect('https://example.com' + req.url);
-  })
+});
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
