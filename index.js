@@ -84,7 +84,8 @@ app.get('/webhook', (req, res) => {
             next();
     } else {
             // request was via http, so redirect to https
-            res.redirect('https://' + req.headers.host + req.url);
+            res.writeHead(301,{Location: `https://${req.headers.host}${req.url}`});
+            res.end();
     }
 });
 
