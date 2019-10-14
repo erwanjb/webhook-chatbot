@@ -5,7 +5,21 @@ require('dotenv').config()
 const
   express = require('express'),
   bodyParser = require('body-parser'),
-  app = express().use(bodyParser.json()); // creates express http server
+  app = express().use(bodyParser.json()), // creates express http server
+  https = require('https'),
+  fs = require('fs');
+
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/test-ejb.ovh/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/test-ejb.ovh/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/test-ejb.ovh/chain.pem', 'utf8');
+
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
 app.use('/', express.static(__dirname + '/public'));
 
@@ -62,6 +76,9 @@ app.get('/webhook', (req, res) => {
       }
     }
   });
+const httpsServer = https.createServer(credentials, app);
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT, () => console.log('webhook is listening'));
+httpsServer.listen(process.env.PORT, () => {
+	console.log('HTTPS Server running on port ' + process.env.PORT);
+});
