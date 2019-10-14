@@ -6,8 +6,6 @@ const
   express = require('express'),
   bodyParser = require('body-parser'),
   app = express().use(bodyParser.json()), // creates express http server
-  https = require('https'),
-  http = require('http'),
   fs = require('fs');
 
 
@@ -78,23 +76,7 @@ app.get('/webhook', (req, res) => {
     }
   });
 
-  app.use (function (req, res, next) {
-    if (req.secure) {
-            // request was via https, so do no special handling
-            next();
-    } else {
-            // request was via http, so redirect to https
-            res.writeHead(301,{Location: `https://${req.headers.host}${req.url}`});
-            res.end();
-    }
-});
-
-const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(80, () => {
-	console.log('HTTP Server running on port 80');
-});
 
 // Sets server port and logs message on success
 httpsServer.listen(process.env.PORT, () => {
