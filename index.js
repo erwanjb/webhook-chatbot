@@ -78,15 +78,15 @@ app.get('/webhook', (req, res) => {
     }
   });
 
+  app.get('*', function(req, res) {  
+    // res.redirect('https://' + req.headers.host + req.url);
+    console.log(req.headers)
+    // Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
+    // res.redirect('https://example.com' + req.url);
+  })
+
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
-
-httpServer.get('*', function(req, res) {  
-  res.redirect('https://' + req.headers.host + req.url);
-
-  // Or, if you don't want to automatically detect the domain name from the request header, you can hard code it:
-  // res.redirect('https://example.com' + req.url);
-})
 
 httpServer.listen(80, () => {
 	console.log('HTTP Server running on port 80');
